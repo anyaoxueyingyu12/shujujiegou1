@@ -1,0 +1,544 @@
+#include<stdio.h>
+#include<stdlib.h>
+struct student{
+    int age;
+    float score;
+    char name;
+};
+//void Input(int num, struct student* parr){
+//    int i=0;
+//    for(i=0;i<num;i++){
+//        scanf("%d%f%s",&parr[i].age,&parr[i].score,parr[i].name);
+//    }
+//}
+//void Output(int num,struct student* parr){
+//    int i=0;
+//    for(i=0;i<num;i++)
+//    {
+//        printf("%d%f%s", parr[i].age, parr[i].score, parr[i].name) ;
+//    }
+//}
+int main(){
+    int number;
+    int*parr;
+    struct student stu;
+    //动态构造一维数组
+    printf("write the students numbers\n");
+    printf("numbers=");
+    scanf("%d",&number);
+    parr=(struct student*)malloc(sizeof(struct student)*number);
+    int i=0;
+    for(i=0;i<number;i++){
+        printf("put in the student news\n");
+        printf("age =");
+        scanf("%d",&parr[i].age);
+    }
+//    Input(number, &stu);
+//    Output(number,&stu);
+    return 0;
+}
+---------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+结构体模拟数组
+#include <stdio.h>
+#include<stdlib.h>
+#include <stdbool.h>
+
+struct Arr{
+    int cnt;    //数组当前的长度
+    int length;   //数组的最大长度
+    int* PBase;   //存储的是数组的第一个元素地址
+};
+void InitArr(struct Arr* pst,int len){
+    pst->PBase=(int *)malloc(sizeof(int)*len); // 空间指向数组的第一个元素地址
+    if(NULL==pst->PBase){
+        printf("this is failed\n");
+    }else{
+        pst->length=len;
+        pst->cnt=0;
+    }
+}
+bool is_empty(struct Arr* pst){
+    if(0==pst->cnt){   //刚开始写的是PBase没有成功
+        return true;
+    }else{
+        return false;
+    }
+}
+void ShowArr(struct Arr* pst){
+    if(is_empty(pst)){   //判空并且PST存放的就是地址
+        printf("this is empty\n");
+    }
+    int i=0;
+    for(i=0;i<pst->cnt;i++){
+        printf("%d ",pst->PBase[i]);
+    }
+}
+bool is_full(struct Arr* pst){   //判满
+    if(pst->cnt==pst->length)
+        return true;
+    return false;
+}
+
+bool APpend(struct Arr* pst,int len){
+    if(is_full(pst)){  //满了返回false
+        return false;
+    }
+    pst->PBase[pst->cnt]=len;     //不满就追加
+    (pst->cnt)++;
+    return true;
+//    if(is_full(pst)){     //返回值是void
+//        printf ("false\n");
+//    }else {
+//        pst->PBase[len] = len;
+//        if (pst->PBase[len] <= 6) {
+//            printf("%d", pst->PBase[len]);
+//        }
+//        printf("bai bai\n");  //有错误
+//    }
+}
+bool Insert(struct Arr* pst,int pose,int elme){
+    int i=0;
+    if(is_full(pst)){
+        return false;
+    }
+    if(pose<1||pose>(pst->cnt)+1) {  //cnt与length一样都可以
+        return false;
+    }
+    for(i=pst->cnt-1;i>=pose-1;i--){  //i=pst->cnt-1;i>=pose-1;i--// 有问题i=pose-1;i<=pst->cnt-1;i++ 1 9 2 2 2 2
+        pst->PBase[i+1]=pst->PBase[i];
+//        pst->PBase[i-1]=elme;
+//            (pst->cnt)++;
+//        pst->PBase[i-1]=elme;  // 9 9 9 9 9 5 结果
+
+//        (pst->cnt)++;
+    }
+    pst->PBase[pose-1]=elme;  //循环外赋值
+    pst->cnt++;
+    return true;
+}
+bool DeleteArr(struct Arr* pst,int pose,int* type){  //struct Arr* 有问题要用Int定义
+    if(is_empty(pst)){
+        return false;
+    }
+    if(pose<1||pose>pst->cnt){
+        return false;
+    }
+    int i=0;
+    *type=pst->PBase[pose-1];
+    for(i=pose;i<pst->cnt;i++){
+        pst->PBase[i-1]=pst->PBase[i];
+    }
+    pst->cnt--;
+//    for(i=pst->cnt;i>=pose-1;i--){
+//        pst->PBase[i-1]=pst->PBase[i];
+//
+//    }//结果失败
+    return true;
+}
+void ReverseArr(struct Arr* pst){
+    int i=0;
+    int j=pst->cnt-1;
+    int t=0;
+    while(i<j){
+        t=pst->PBase[i];
+        pst->PBase[i]=pst->PBase[j];
+        pst->PBase[j]=t;
+        i++;
+        j--;
+    }
+//    int left=0;
+//    int right=pst->length-1;
+//    int i=0;
+//    for(i=0;i<pst->cnt;i++){
+//        if(left<=right){
+//            int temp=pst->PBase[left];
+//            pst->PBase[left]=pst->PBase[right];
+//            pst->PBase[right]=temp;
+//            left++;
+//            right--;
+//        }
+//    }//自己写的
+}
+void sort_arr(struct Arr* pst){
+    int i,j,k;
+    for(i=0;i<pst->cnt;i++){
+        for(j=0;j<pst->cnt;j++){
+            if(pst->PBase[j+1]<pst->PBase[j]){
+                k=pst->PBase[j];
+                pst->PBase[j]=pst->PBase[j+1];
+                pst->PBase[j+1]=k;
+            }
+        }
+    }
+}
+int main() {
+    struct Arr st;   //定义结构体变量
+    InitArr(&st,6);    //初始化
+    ShowArr(&st);     //打印
+    APpend(&st,1);  //追加结果让结构体数组赋值
+    APpend(&st,8);
+    APpend(&st,6);
+    APpend(&st,99);
+    APpend(&st,5);
+//    APpend(&st,6);
+//    ReverseArr(&st);
+//    Insert(&st,2,9);
+    sort_arr(&st);
+//    int type=0;
+//    DeleteArr(&st,2,&type);
+//    if(DeleteArr(&st,2,&type)){
+//        printf("delete the number is %d\n",type);
+//    }else{
+//        printf("failed\n");
+//    }
+//    APpend(&st,7);
+//    APpend(&st,8);
+//    if(APpend(&st,8)) {
+//        printf("append success\n");
+//    }else{
+//
+//         printf("append failed\n");
+//    }
+    ShowArr(&st);     //打印
+    return 0;
+
+}
+
+===================================================================
+===================================================================
+=======================================================================
+========================================================================
+链表代码
+PNode creat_node();
+void print(PNode PHead);
+int main() {
+//    int len=5;
+    PNode PHead=NULL;  //struct Node*== PNode 用来存放链表的头节点的地址
+    PHead=creat_node();
+    print(PHead);  //打印链表
+    return 0;
+}
+PNode creat_node(){
+    int len=0;
+    int i=0;
+    int val=0;
+    PNode PHead=(PNode)malloc(sizeof(Node));
+    if(NULL==PHead) {  //判空
+        printf("it is failure\n");
+        exit(-1);
+    }
+    PNode PTail=PHead;  //尾指针
+    PTail->PNext=NULL;  //指向空
+    printf("put in your number\n");
+    scanf("%d",&len);
+    for(i=0;i<len;i++){
+        scanf("%d",&val);
+//        scanf("%d",&val);
+        PNode PNew=(PNode)malloc(sizeof(Node));  //定义后续节点
+        PNew->data=val;  //第一个节点
+        PTail->PNext=PNew;
+        PNew->PNext=NULL;
+        PTail=PNew;
+    }
+    return PHead;
+}
+void print(PNode PHead){
+    PNode p=PHead->PNext;  //定义一个指针用来辅助打印
+    while(p){
+        printf("%d ",p->data);
+        p=p->PNext;
+    }
+}
+================================================================
+原创性型链表
+#include <stdio.h>
+#include<stdlib.h>
+typedef struct Node{
+    int data;  //数据域
+    struct Node* PNext;  //指针域
+}Node,*PNode;
+PNode creat_node(PNode PHead,int len){   //未加返回行导致头指针地址没有返回去
+    PHead=(PNode)malloc(sizeof(Node));   //头指针
+    if(NULL==PHead){  //判空
+        printf("it is failure\n");
+        exit(-1);
+    }
+    PNode PTail=PHead;  //尾指针
+    PTail->PNext=NULL;  //指向空
+    int i=0;
+    int val=0;
+    printf("please put in your number\n");
+    for(i=0;i<len;i++){
+        scanf("%d",&val);
+        PNode PNew=(PNode)malloc(sizeof(Node));  //定义后续节点
+        PNew->data=val;  //第一个节点
+        PTail->PNext=PNew;
+        PNew->PNext=NULL;
+        PTail=PNew;
+    }
+    return PHead;
+}
+void print(PNode PHead){
+    PNode p=PHead->PNext;  //定义一个指针用来辅助打印
+    while(p){
+        printf("%d ",p->data);
+        p=p->PNext;
+    }
+}
+int main() {
+    int len=5;
+    PNode PHead=NULL;  //struct Node*== PNode 用来存放链表的头节点的地址
+    PHead=creat_node(PHead,5);  //创建一个非循环单链表，并将该来链表头节点地址返回给PHEAD
+    print(PHead);  //打印链表
+    return 0;
+}
+
+=================================================================
+#include<stdio.h>
+#include<stdlib.h>
+#include<stdbool.h>
+typedef struct node{
+	int data;  //数据域
+	struct node* pNext;  //指针域 
+}Node,*pNode;
+pNode creat_node(){
+	pNode pHead=(pNode)malloc(sizeof(Node));  //创建头节点
+	if(NULL==pHead){   //判空 
+		printf("failed\n");
+		exit(-1);
+	}
+	pNode pTail=pHead;
+	pTail->pNext=NULL;
+	int i=0,j=0,val=0;
+	printf("the number\n");
+	scanf("%d",&i);  //链表的长度 
+	for(j=0;j<i;j++){
+		scanf("%d",&val);
+		pNode pNew=(pNode)malloc(sizeof(Node));
+		if(NULL==pNew){   //判空 
+		    printf("failed\n");
+		    exit(-1);
+	    }
+		pNew->data=val;
+		pTail->pNext=pNew;
+		pTail=pNew;
+		pTail->pNext=NULL; 
+	}
+	return pHead;
+}
+bool is_empty(pNode pHead){
+	if(NULL==pHead->pNext){
+		return true;
+	}
+	return false;
+}
+void print(pNode pHead){
+	pNode p=pHead->pNext;
+	while(p){
+			printf("%d",p->data);
+			p=p->pNext; 
+	}
+}
+int main(){
+	pNode pHead=NULL;  //链表头指针
+	pHead=creat_node(pHead);
+	is_empty(pHead);  //判空 
+	if(is_empty(pHead)){
+		printf("lose\n");
+	}else{
+		printf("success\n");
+	}
+	print(pHead) ;  //打印链表 
+	return 0;
+}
+=================================================================
+#include<stdio.h>
+#include<stdlib.h>
+#include<stdbool.h>
+typedef struct node{
+	int data;  //数据域
+	struct node* pNext;  //指针域 
+}Node,*pNode;
+pNode creat_node(){
+	pNode pHead=(pNode)malloc(sizeof(Node));  //创建头节点
+	if(NULL==pHead){   //判空 
+		printf("failed\n");
+		exit(-1);
+	}
+	pNode pTail=pHead;
+	pTail->pNext=NULL;
+	int i=0,j=0,val=0;
+	printf("the number\n");
+	scanf("%d",&i);  //链表的长度 
+	for(j=0;j<i;j++){
+		scanf("%d",&val);
+		pNode pNew=(pNode)malloc(sizeof(Node));
+		if(NULL==pNew){   //判空 
+		    printf("failed\n");
+		    exit(-1);
+	    }
+		pNew->data=val;
+		pTail->pNext=pNew;
+		pTail=pNew;
+		pTail->pNext=NULL; 
+	}
+	return pHead;
+}
+bool is_empty(pNode pHead){
+	if(NULL==pHead->pNext){
+		return true;
+	}
+	return false;
+}
+void print(pNode pHead){
+	pNode p=pHead->pNext;
+	while(p){
+			printf("%d ",p->data);
+			p=p->pNext; 
+	}
+	printf("\n");
+}
+int LengthList(pNode pHead){
+	int len=0;
+	pNode p=pHead->pNext;
+	while(p){
+		len++;
+		p=p->pNext;
+	}
+	return len;
+}
+void sort_list(pNode pHead){
+	int i=0,j=0,t=0;
+	pNode p=NULL,q=NULL;
+	int len=LengthList(pHead);
+	for(i=0,p=pHead->pNext;i<len-1;i++,p=p->pNext){
+		for(j=i+1,q=p->pNext;j<len;j++,q=q->pNext){
+		    if(p->data>q->data){  //a[j]>a[j+1]
+		    	t=p->data;                   //t=a[j]
+			    p->data=q->data;     //a[j]=a[j+1
+			    q->data=t;                    //a[j+1]=t
+		    }
+		}
+	}
+}
+bool insert_list(pNode pHead,int pose,int vel){
+	int i=0;
+	pNode p=pHead;
+	while(p&&i<pose-1){
+		p=p->pNext;
+		i++;
+	}
+	if(i>pose-1||NULL==p){
+		return false;
+	}
+	pNode q=NULL;
+	pNode pNew=(pNode)malloc(sizeof(Node));
+	if(NULL==pNew){
+		printf("failed\n");
+		exit(-1);
+	}
+	pNew->data=vel;
+	q=p->pNext;
+	p->pNext=pNew;
+	pNew->pNext=q;
+	return true;
+}
+bool delete_list(pNode pHead,int pose,int* pval){
+	int i=0;
+	pNode p=pHead;
+	while(p->pNext&&i<pose-1){ // p->pNext
+		p=p->pNext;
+		i++;
+	}
+	if(i>pose-1||NULL==p->pNext){  // p->pNext!
+		printf("failed\n");
+		exit(-1);
+	}
+	pNode pNew=(pNode)malloc(sizeof(Node));
+	if(pNew==NULL){
+		printf("failed\n");
+	}
+	pNode q=p->pNext;
+    *pval=q->data;
+	p->pNext=q->pNext;
+	free(q);
+	q=NULL;
+	return true;
+}
+int main(){
+	pNode pHead=NULL;  //链表头指针
+	pHead=creat_node(pHead);
+	is_empty(pHead);  //判空 
+	if(is_empty(pHead)){
+		printf("lose\n");
+	}else{
+		printf("success\n");
+	}
+//	int len=LengthList(pHead);
+//	print(pHead) ;  //打印链表 
+//    int val=0;
+//    if(delete_list(pHead,3,&val)){
+//    	printf("succsssful\n");
+//	}else{
+//		printf("failed\n");
+//	}
+	insert_list(pHead,2,33);
+//	printf("the list length is %d\n",len);  //打印链表长度
+//	sort_list(pHead); 
+	print(pHead) ; 
+	return 0;
+}
+==============================================================
+==================================================================
+#include<stdio.h>
+#include<stdlib.h>
+typedef struct node{
+	int data;
+	struct node* pNext;
+}Node,*pNode;
+typedef struct stack{
+	pNode pTop;
+	pNode pBottom;
+}stack,*pStack;
+void init_stack(pStack ps){
+	ps->pTop=(pNode)malloc(sizeof(Node));
+	if(NULL==ps->pTop){
+		printf("failed\n");
+	    exit(-1);
+	}else{
+		ps->pBottom=ps->pTop;
+		ps->pTop->pNext=NULL;  //等价于 	ps->pTop->pBottom=NULL
+	}
+}
+void push_stack(pStack ps,int val){
+	pNode pNew=(pNode)malloc(sizeof(Node));
+	pNew->data=val;
+	pNew->pNext=ps->pTop;
+	ps->pTop=pNew;
+}
+void traverse_stack(pStack ps){
+	pNode p=ps->pTop;
+	while(p!=ps->pBottom){
+		printf("%d ",p->data);
+		p=p->pNext;
+	}
+	printf("\n");
+}
+int main(){
+	stack s;  //类似于  struct stack S
+	init_stack(&s);
+	push_stack(&s,1); 
+	push_stack(&s,2);
+	push_stack(&s,4);	
+	push_stack(&s,5);
+	push_stack(&s,6);
+	push_stack(&s,7);
+	push_stack(&s,8);
+	traverse_stack(&s);
+	push_stack(&s)
+	return 0;
+}栈
